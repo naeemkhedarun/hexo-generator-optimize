@@ -1,6 +1,6 @@
 var uglify   = require('uglify-js'),
     imagemin = require('image-min'),
-    cleanCSS = require('clean-css'),
+    CleanCSS = require('clean-css'),
     fs       = require('fs'),
     path     = require('path'),
     util     = require('util'),
@@ -12,6 +12,7 @@ var async    = require('async');
 var htmlminifier   = require('html-minifier');
 
 var config = hexo.config.optimize;
+
 
 //var promisify = require('deferred').promisify
 //var readdir = promisify(fs.readdirSync), stat = promisify(fs.statSync)
@@ -25,7 +26,7 @@ var supportedResources = {
       },
      'css' : function(content, opts) {
         if(config.css_min == undefined || config.css_min == true) {
-           return cleanCSS().minify(content);
+           return new CleanCSS().minify(content);
         }
       }
 
@@ -312,9 +313,7 @@ var optimize = function(args) {
           }else{
             callback(null,null);
           }
-        },
-        function(callback) {
-          if(typeof config.css_concat == undefined || config.css_concat == true ){
+          if(typeof config.css_concat == undefined || config.css_concat == true){
               console.log('begin concat css');
               concatCssFiles(function(){
                 callback(null, null);
@@ -323,12 +322,6 @@ var optimize = function(args) {
             callback(null,null);
           }
         },
-//        function(callback) {
-//          console.log('4')
-//            upfiles(function(){
-//              callback(null, null);
-//            });
-//        },
         function(callback) {
             if(typeof config.gzip == undefined || config.gzip == true ){
                 gzipHtml(function(){
