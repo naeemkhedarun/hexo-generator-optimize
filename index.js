@@ -62,7 +62,7 @@ gulp.task('css', function() {
     .pipe(plugins.rename({ suffix: '.min' }))
     .pipe(plugins.rev())
     .pipe(plugins.minifyCss())
-    .pipe(gulp.dest(hexo.public_dir + '/css/'))
+    .pipe(gulp.dest(hexo.public_dir + config.css_filepath))
     .pipe(plugins.rev.manifest())
     .pipe(gulp.dest(hexo.public_dir + '/css/'))
     .pipe(plugins.notify({ message: 'Styles task complete' }));
@@ -75,7 +75,7 @@ gulp.task('js', function() {
     .pipe(plugins.rename({ suffix: '.min' }))
     .pipe(plugins.uglify())
     .pipe(plugins.rev())
-    .pipe(gulp.dest(hexo.public_dir + '/js/'))
+    .pipe(gulp.dest(hexo.public_dir + config.js_filepath))
     .pipe(plugins.rev.manifest())
     .pipe(gulp.dest(hexo.public_dir + '/js/'))
     .pipe(plugins.notify({ message: 'Styles task complete' }));
@@ -85,9 +85,10 @@ gulp.task('html', ["css", "js"],function() {
   var cssManifest = gulp.src(hexo.public_dir + 'css/rev-manifest.json');
   var jsManifest = gulp.src(hexo.public_dir + 'js/rev-manifest.json');
   return gulp.src(hexo.public_dir + '/**/*.html')
-    .pipe(plugins.htmlReplace({css: 'css/all.min.css', js: 'js/all.min.js'}))
+    .pipe(plugins.htmlReplace({css: config.css_webpath + 'all.min.css', js: config.js_webpath + 'all.min.js'}))
     .pipe(plugins.revReplace({manifest: cssManifest}))
     .pipe(plugins.revReplace({manifest: jsManifest}))
+    .pipe(plugins.htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest(hexo.public_dir));
 });
 
