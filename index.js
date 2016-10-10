@@ -1,7 +1,7 @@
 var gulp = require('gulp'),
 	gulpLoadPlugins = require('gulp-load-plugins'),
 	plugins = gulpLoadPlugins(),
-  async  = require('async');
+    async  = require('async');
   
 var public_dir = hexo.public_dir;
 var config = hexo.config.optimize;
@@ -27,7 +27,7 @@ gulp.task('css', function() {
     .pipe(plugins.plumber({ errorHandler: onError }))
     .pipe(plugins.concat('all.css'))
     .pipe(plugins.uncss({
-        html: [public_dir + '/index.html']
+        html: [public_dir + '/**/*.html']
     }))
     .pipe(plugins.autoprefixer(AUTOPREFIXER_BROWSERS))
     .pipe(plugins.base64({ extensions:['svg'] }))
@@ -37,7 +37,7 @@ gulp.task('css', function() {
     .pipe(gulp.dest(public_dir + config.css_filepath))
     .pipe(plugins.rev.manifest())
     .pipe(gulp.dest(public_dir + '/css/'))
-    .pipe(plugins.notify({ message: 'Styles task complete' }));
+    .pipe(plugins.notify({ message: 'CSS task complete' }));
 });
 
 gulp.task('js', function() {
@@ -50,21 +50,23 @@ gulp.task('js', function() {
     .pipe(gulp.dest(public_dir + config.js_filepath))
     .pipe(plugins.rev.manifest())
     .pipe(gulp.dest(public_dir + '/js/'))
-    .pipe(plugins.notify({ message: 'Styles task complete' }));
+    .pipe(plugins.notify({ message: 'JS task complete' }));
 });
 
 gulp.task('html', ["css", "js"],function() {
   var cssManifest = gulp.src(public_dir + 'css/rev-manifest.json');
   var jsManifest = gulp.src(public_dir + 'js/rev-manifest.json');
   return gulp.src(public_dir + '/**/*.html')
+    .pipe(plugins.plumber({ errorHandler: onError }))
     .pipe(plugins.htmlReplace({css: config.css_webpath + 'all.min.css', js: config.js_webpath + 'all.min.js'}))
     .pipe(plugins.revReplace({manifest: cssManifest}))
     .pipe(plugins.revReplace({manifest: jsManifest}))
     .pipe(plugins.htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest(public_dir));
+    .pipe(gulp.dest(public_dir))
+    .pipe(plugins.notify({ message: 'HTML task complete' }));;
 });
 
-gulp.task('default', ['css', 'js','html']);
+gulp.task('default', ['html']);
 
 var optimize = function(args) {
     async.series([
